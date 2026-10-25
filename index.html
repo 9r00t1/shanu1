@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Love You in 75 Languages</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #050505;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #heart-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .credits {
+            position: fixed;
+            bottom: 20px;
+            color: #ff3366;
+            font-size: 14px;
+            letter-spacing: 2px;
+            opacity: 0.7;
+            text-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="heart-canvas"></canvas>
+    <div class="credits">❤️</div>
+
+    <script>
+        const canvas = document.getElementById('heart-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Resize canvas to full screen
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // 75+ "I love you" translations/phrases
+        const phrases = [
+            "I love you", "Te amo", "Je t'aime", "Ich liebe dich", "Ti amo", 
+            "Seni seviyorum", "Te quiero", "Я тебя люблю", "Aishiteru", "Saranghae", 
+            "Wǒ ài nǐ", "Kocham cię", "Eu te amo", "Mahal kita", "Aloha wau ia ʻoe", 
+            "Volim te", "Miluj tě", "Te dua", "Ik hou van jou", "Jeg elsker dig", 
+            "Minä rakastan sinua", "Jag älskar dig", "Te kōra", "Ana behibak", 
+            "Ani ohev otach", "Main tumse pyar karta hoon", "Aku cinta kamu", 
+            "Phom rak khun", "Nguva yandisingaperi", "Tako ljubav", "Bist du", 
+            "Te tupu", "Obicham te", "Volim te", "Szeretlek", "Te iubesc", 
+            "Nakupanda", "Mbiye", "Ngiyakuthanda", "Ndikufuna", "Mi amas vin", 
+            "Mahal", "Tè amo", "Chay gi", "Ay luv yu", "Kam m'ne", "Mon amour", 
+            "Gran amor", "Te quiero mucho", "Tengo amor", "Je t'adore", "Te adoro", 
+            "Herz", "Amour", "Mio cuore", "Alma mía", "Vida mía", "Corazón", 
+            "Darlin", "Sweetheart", "Forever", "Always", "Soulmate", "Passion", 
+            "Devotion", "Adoration", "Cherished", "Treasured", "Beloved", "Mine"
+        ];
+
+        // Mathematical parametric equation for a 2D Heart Shape
+        function getHeartPoint(t, scale) {
+            // t goes from 0 to 2*PI
+            const x = 16 * Math.pow(Math.sin(t), 3);
+            const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+            return {
+                x: canvas.width / 2 + x * scale,
+                y: canvas.height / 2 + y * scale
+            };
+        }
+
+        // Generate static fixed points outlining the heart structure
+        const heartPoints = [];
+        const totalPoints = 75; // Matches the 75 languages concept!
+        
+        for (let i = 0; i < totalPoints; i++) {
+            const t = (i / totalPoints) * Math.PI * 2;
+            // Adjust scale based on screen size
+            const scaleFactor = Math.min(canvas.width, canvas.height) / 38;
+            const pt = getHeartPoint(t, scaleFactor);
+            
+            heartPoints.push({
+                x: pt.x,
+                y: pt.y,
+                text: phrases[i % phrases.length],
+                color: i % 2 === 0 ? "#ff3366" : "#ff758c",
+                size: Math.floor(Math.random() * 4) + 12
+            });
+        }
+
+        function animate() {
+            // Clear frame with a subtle trail effect
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw each language phrase arranged in the heart shape with minor pulse offsets
+            const time = Date.now() * 0.002;
+            
+            heartPoints.forEach((p, index) => {
+                // Add a subtle breathing/pulsing animation
+                const pulse = Math.sin(time + index) * 2;
+                
+                ctx.font = `bold ${p.size}px 'Courier New', monospace`;
+                ctx.fillStyle = p.color;
+                ctx.shadowColor = p.color;
+                ctx.shadowBlur = 8;
+                
+                ctx.fillText(p.text, p.x + (pulse * 0.5), p.y + pulse);
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
